@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f1ec">
+  <meta name="description" content="Shop phones, audio, laptops and everyday tech at Tempted Gadgets, Ikeja, Lagos.">
+  <title>Tempted Gadgets | Tech worth wanting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #171515;
+      --muted: #77716e;
+      --paper: #f4f1ec;
+      --white: #fffdfa;
+      --line: #e7e1da;
+      --red: #f04438;
+      --red-dark: #cb3028;
+      --plum: #30171b;
+      --green: #27654c;
+      --display: "Space Grotesk", sans-serif;
+      --body: "DM Sans", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--body); }
+    body.locked { overflow: hidden; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    .wrap { width: min(1240px, calc(100% - 64px)); margin: 0 auto; }
+
+    .announcement { min-height: 34px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 7px 16px; background: var(--plum); color: #fff7f4; font-size: 11px; letter-spacing: .04em; }
+    .announcement strong { color: #ff7869; font-weight: 700; }
+    .announcement .dot { width: 5px; height: 5px; border-radius: 50%; background: #ff7869; }
+    .site-header { position: sticky; top: 0; z-index: 20; background: rgba(255,253,250,.96); border-bottom: 1px solid var(--line); backdrop-filter: blur(14px); }
+    .nav { height: 76px; display: flex; align-items: center; gap: 34px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .brand-mark { width: 35px; height: 35px; display: grid; place-items: center; background: var(--red); color: white; font: 700 23px/1 var(--display); clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%); }
+    .brand-name { font: 700 16px/1 var(--display); letter-spacing: 0; }
+    .brand-name span { display: block; margin-top: 4px; font: 600 8px/1 var(--body); letter-spacing: .28em; }
+    .nav-links { display: flex; align-items: center; gap: 26px; margin-left: auto; font-size: 13px; font-weight: 600; }
+    .nav-links a { transition: color .2s; }
+    .nav-links a:hover { color: var(--red-dark); }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .search-box { display: flex; align-items: center; gap: 8px; width: 194px; height: 40px; padding: 0 12px; border: 1px solid var(--line); background: #fff; }
+    .search-box span { color: var(--muted); font-size: 17px; }
+    .search-box input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
+    .search-box input::placeholder { color: #918b86; }
+    .bag-button { position: relative; min-height: 40px; padding: 0 14px; border: 1px solid var(--ink); background: var(--ink); color: white; cursor: pointer; font-size: 12px; font-weight: 700; }
+    .bag-count { display: inline-grid; min-width: 19px; height: 19px; place-items: center; margin-left: 6px; border-radius: 50%; background: var(--red); font-size: 10px; }
+
+    .hero { overflow: hidden; background: var(--paper); }
+    .hero-grid { min-height: 590px; display: grid; grid-template-columns: 1fr .95fr; align-items: center; gap: 48px; padding-top: 38px; padding-bottom: 38px; }
+    .hero-copy { position: relative; z-index: 1; padding: 20px 0; animation: rise .7s both; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 22px; color: var(--red-dark); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 24px; height: 2px; background: var(--red); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 600px; margin-bottom: 20px; font: 700 clamp(48px, 6.2vw, 82px)/.98 var(--display); letter-spacing: 0; }
+    h1 .accent { color: var(--red); }
+    .hero-copy > p { max-width: 420px; margin-bottom: 29px; color: #5f5956; font-size: 15px; line-height: 1.7; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+    .primary-button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px; border: 0; background: var(--red); color: white; cursor: pointer; font-size: 12px; font-weight: 700; transition: background .2s, transform .2s; }
+    .primary-button:hover { transform: translateY(-2px); background: var(--red-dark); }
+    .text-link { font-size: 12px; font-weight: 700; border-bottom: 1px solid #a8a09a; padding-bottom: 4px; }
+    .hero-meta { display: flex; align-items: center; gap: 12px; margin-top: 45px; color: var(--muted); font-size: 11px; }
+    .hero-meta strong { color: var(--ink); }
+    .hero-meta .stars { color: var(--red); letter-spacing: 2px; }
+    .hero-art { position: relative; align-self: stretch; display: flex; justify-content: center; align-items: center; min-height: 500px; animation: reveal .8s .12s both; }
+    .hero-art::before { content: ""; position: absolute; width: min(100%, 510px); aspect-ratio: 1; right: 1%; top: 50%; transform: translateY(-50%) rotate(3deg); background: #f04438; }
+    .hero-art img { position: relative; width: min(100%, 500px); aspect-ratio: 1; object-fit: cover; box-shadow: 0 18px 50px #33151d30; }
+    .art-tag { position: absolute; z-index: 2; right: -8px; bottom: 10%; padding: 13px 17px; background: var(--white); box-shadow: 0 8px 28px #1d13141c; font: 600 11px/1.5 var(--display); }
+    .art-tag strong { display: block; color: var(--red-dark); font-size: 15px; }
+
+    .service-strip { border-bottom: 1px solid var(--line); background: var(--white); }
+    .service-grid { min-height: 80px; display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; }
+    .service-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-right: 1px solid var(--line); }
+    .service-item:first-child { padding-left: 0; }
+    .service-item:last-child { border-right: 0; }
+    .service-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: #fff0ed; color: var(--red-dark); font-size: 15px; }
+    .service-item strong { display: block; font-size: 11px; }
+    .service-item small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+
+    .shop-section { padding: 86px 0 92px; scroll-margin-top: 95px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+    .section-kicker { margin-bottom: 10px; color: var(--red-dark); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    h2 { margin-bottom: 0; font: 700 clamp(29px, 3vw, 40px)/1.1 var(--display); letter-spacing: 0; }
+    .section-note { margin: 0 0 3px; color: var(--muted); font-size: 12px; }
+    .category-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .category-button { min-height: 36px; padding: 0 15px; border: 1px solid var(--line); background: white; cursor: pointer; font-size: 11px; font-weight: 600; transition: .18s ease; }
+    .category-button:hover, .category-button.active { border-color: var(--ink); background: var(--ink); color: white; }
+    .product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 18px; }
+    .product-card { min-width: 0; animation: rise .45s both; }
+    .product-visual { position: relative; overflow: hidden; aspect-ratio: 1 / 1.02; background: #f3f0eb; }
+    .product-visual img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s; }
+    .product-card:hover .product-visual img { transform: scale(1.045); }
+    .product-badge { position: absolute; left: 11px; top: 11px; padding: 6px 8px; background: var(--white); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+    .favorite { position: absolute; top: 9px; right: 9px; width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #fffdfaeb; cursor: pointer; font-size: 18px; transition: color .2s, transform .2s; }
+    .favorite:hover { transform: scale(1.08); }
+    .favorite.selected { color: var(--red); }
+    .product-info { padding-top: 13px; }
+    .product-category { margin-bottom: 6px; color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .product-title-row { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+    .product-title { overflow: hidden; margin: 0; font: 600 14px/1.35 var(--display); text-overflow: ellipsis; white-space: nowrap; }
+    .rating { flex: 0 0 auto; color: #ad6a13; font-size: 10px; }
+    .product-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 11px; }
+    .price { font: 700 15px/1 var(--display); }
+    .old-price { margin-left: 5px; color: #a39d98; font-size: 10px; text-decoration: line-through; }
+    .add-button { min-height: 33px; padding: 0 11px; border: 1px solid var(--ink); background: transparent; cursor: pointer; font-size: 10px; font-weight: 700; transition: .2s; }
+    .add-button:hover { background: var(--ink); color: white; }
+    .empty-state { grid-column: 1 / -1; padding: 56px 20px; color: var(--muted); text-align: center; font-size: 14px; }
+
+    .feature { overflow: hidden; background: var(--plum); color: white; }
+    .feature-inner { min-height: 280px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 30px; padding-top: 50px; padding-bottom: 50px; }
+    .feature .section-kicker { color: #ff8173; }
+    .feature h2 { max-width: 580px; margin-bottom: 14px; font-size: clamp(30px, 4vw, 48px); }
+    .feature p { max-width: 460px; margin: 0; color: #d8c7c6; font-size: 13px; line-height: 1.7; }
+    .feature .primary-button { background: var(--red); }
+    .feature-mark { width: 150px; height: 150px; display: grid; place-items: center; border: 1px solid #ffffff31; border-radius: 50%; color: #ff7366; font: 700 78px/1 var(--display); transform: rotate(-8deg); }
+
+    .about { padding: 75px 0; background: var(--paper); scroll-margin-top: 90px; }
+    .about-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; align-items: start; }
+    .about-copy { max-width: 570px; }
+    .about-copy p { margin: 15px 0 0; color: #625c58; font-size: 13px; line-height: 1.8; }
+    .contact-list { display: grid; gap: 12px; margin-top: 4px; }
+    .contact-row { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid #ddd5cd; font-size: 12px; }
+    .contact-row span:first-child { width: 28px; color: var(--red-dark); font-size: 16px; text-align: center; }
+    .contact-row strong { display: block; margin-bottom: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+    .contact-row a:hover { color: var(--red-dark); }
+
+    footer { background: #191616; color: white; }
+    .footer-main { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding-top: 30px; padding-bottom: 30px; }
+    .footer-main p { margin: 0; color: #b6aeaa; font-size: 11px; }
+    .footer-links { display: flex; gap: 18px; color: #eee7e3; font-size: 11px; }
+    .footer-bottom { padding: 13px 0; border-top: 1px solid #ffffff20; color: #918985; font-size: 10px; }
+    .footer-bottom .wrap { display: flex; justify-content: space-between; gap: 20px; }
+
+    .drawer-backdrop { position: fixed; z-index: 39; inset: 0; visibility: hidden; background: #17151580; opacity: 0; transition: opacity .25s, visibility .25s; }
+    .drawer-backdrop.open { visibility: visible; opacity: 1; }
+    .cart-drawer { position: fixed; z-index: 40; inset: 0 0 0 auto; width: min(440px, 100%); display: flex; flex-direction: column; background: var(--white); transform: translateX(102%); transition: transform .3s ease; }
+    .cart-drawer.open { transform: translateX(0); }
+    .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 23px 24px; border-bottom: 1px solid var(--line); }
+    .drawer-head h2 { font-size: 23px; }
+    .close-button { width: 36px; height: 36px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 20px; }
+    .cart-items { flex: 1; overflow: auto; padding: 12px 24px; }
+    .cart-empty { display: grid; min-height: 250px; place-content: center; gap: 12px; color: var(--muted); text-align: center; font-size: 13px; }
+    .cart-empty strong { color: var(--ink); font: 600 18px var(--display); }
+    .cart-line { display: grid; grid-template-columns: 76px 1fr auto; gap: 13px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+    .cart-line img { width: 76px; height: 82px; object-fit: cover; background: var(--paper); }
+    .cart-line h3 { margin: 3px 0 6px; font: 600 13px var(--display); }
+    .cart-line small { color: var(--muted); font-size: 10px; }
+    .qty-controls { display: flex; align-items: center; gap: 9px; margin-top: 9px; }
+    .qty-controls button { width: 24px; height: 24px; border: 1px solid var(--line); background: white; cursor: pointer; }
+    .qty-controls span { min-width: 12px; font-size: 11px; text-align: center; }
+    .line-price { padding-top: 3px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .drawer-bottom { padding: 18px 24px 22px; border-top: 1px solid var(--line); }
+    .shipping-note { margin-bottom: 13px; color: var(--green); font-size: 10px; }
+    .subtotal { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 13px; font-weight: 700; }
+    .checkout-button { width: 100%; min-height: 48px; border: 0; background: var(--red); color: white; cursor: pointer; font-size: 12px; font-weight: 700; }
+    .checkout-button:disabled { background: #c9c3bf; cursor: not-allowed; }
+    .checkout-hint { margin: 10px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
+    .toast { position: fixed; z-index: 50; right: 22px; bottom: 22px; padding: 14px 18px; background: var(--ink); color: white; box-shadow: 0 8px 28px #1715152e; font-size: 12px; opacity: 0; transform: translateY(12px); pointer-events: none; transition: .22s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .mobile-search { display: none; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes reveal { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+    @media (max-width: 1020px) {
+      .wrap { width: min(100% - 44px, 900px); }
+      .nav { gap: 20px; }
+      .nav-links { gap: 17px; }
+      .search-box { width: 160px; }
+      .hero-grid { min-height: 510px; gap: 28px; }
+      .hero-art { min-height: 420px; }
+      .hero-art img { width: min(100%, 420px); }
+      .hero-art::before { width: min(100%, 430px); }
+      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .wrap { width: calc(100% - 36px); }
+      .announcement { font-size: 9px; }
+      .nav { height: 66px; gap: 14px; }
+      .brand-mark { width: 31px; height: 31px; font-size: 21px; }
+      .brand-name { font-size: 14px; }
+      .nav-links { display: none; }
+      .nav-actions { margin-left: auto; }
+      .search-box { width: 39px; height: 39px; justify-content: center; padding: 0; border-color: transparent; background: transparent; }
+      .search-box span { font-size: 19px; }
+      .search-box input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .bag-button { min-height: 38px; padding: 0 10px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 6px; padding-top: 42px; padding-bottom: 32px; }
+      .hero-copy { padding: 0; }
+      .eyebrow { margin-bottom: 17px; }
+      h1 { max-width: 540px; font-size: clamp(48px, 12vw, 72px); }
+      .hero-copy > p { max-width: 460px; margin-bottom: 23px; font-size: 14px; }
+      .hero-meta { margin-top: 25px; }
+      .hero-art { min-height: 0; margin: 18px auto 0; width: min(100%, 480px); }
+      .hero-art::before { width: 96%; right: -2%; }
+      .hero-art img { width: 94%; }
+      .art-tag { right: -4px; bottom: 8%; }
+      .service-grid { grid-template-columns: repeat(2, 1fr); padding: 9px 0; }
+      .service-item { min-height: 58px; padding: 8px 6px; border-right: 0; }
+      .service-item:nth-child(odd) { border-right: 1px solid var(--line); }
+      .service-item:first-child { padding-left: 6px; }
+      .service-icon { width: 28px; height: 28px; flex: 0 0 auto; font-size: 13px; }
+      .service-item strong { font-size: 10px; }
+      .service-item small { font-size: 9px; }
+      .shop-section { padding: 62px 0 68px; scroll-margin-top: 74px; }
+      .section-head { align-items: start; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+      .section-note { font-size: 11px; }
+      .category-row { flex-wrap: nowrap; overflow-x: auto; margin-right: -18px; padding: 0 18px 6px 0; scrollbar-width: none; }
+      .category-row::-webkit-scrollbar { display: none; }
+      .category-button { flex: 0 0 auto; }
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 23px 12px; }
+      .product-title { font-size: 12px; }
+      .rating { font-size: 9px; }
+      .product-bottom { align-items: flex-start; flex-direction: column; gap: 9px; }
+      .add-button { width: 100%; }
+      .feature-inner { min-height: 0; grid-template-columns: 1fr; gap: 26px; padding-top: 46px; padding-bottom: 46px; }
+      .feature-mark { display: none; }
+      .about { padding: 58px 0; }
+      .about-grid { grid-template-columns: 1fr; gap: 25px; }
+      .footer-main { align-items: flex-start; flex-direction: column; gap: 18px; }
+      .footer-bottom .wrap { flex-direction: column; gap: 6px; }
+      .mobile-search { position: absolute; top: 65px; left: 0; right: 0; display: none; padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--white); }
+      .mobile-search.open { display: block; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement"><strong>FREE DELIVERY</strong><span class="dot"></span><span>on orders over ₦150,000 in Lagos</span></div>
+  <header class="site-header">
+    <div class="nav wrap">
+      <a class="brand" href="#top" aria-label="Tempted Gadgets home">
+        <span class="brand-mark" aria-hidden="true">T</span>
+        <span class="brand-name">Tempted<span>GADGETS</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#shop">Shop all</a><a href="#shop" data-nav-category="Phones">Phones</a><a href="#shop" data-nav-category="Audio">Audio</a><a href="#about">Our store</a>
+      </nav>
+      <div class="nav-actions">
+        <label class="search-box" aria-label="Search products"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search gadgets..."></label>
+        <button class="bag-button" id="open-cart" type="button" aria-label="Open shopping bag">Bag <span class="bag-count" id="bag-count">0</span></button>
+      </div>
+      <label class="mobile-search" id="mobile-search"><input id="mobile-search-input" type="search" placeholder="Search gadgets..."></label>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-grid wrap">
+        <div class="hero-copy">
+          <div class="eyebrow">Your tech, your kind of tempting</div>
+          <h1>Good tech.<br><span class="accent">Great feeling.</span></h1>
+          <p>From the phone you can't stop thinking about to the everyday essentials that just make life better. Find your next favourite at Tempted.</p>
+          <div class="hero-actions"><a class="primary-button" href="#shop">Explore the collection <span aria-hidden="true">↘</span></a><a class="text-link" href="#about">Visit us in Ikeja</a></div>
+          <div class="hero-meta"><span class="stars" aria-label="Five stars">★★★★★</span><span><strong>Your No. 1 gadget store</strong> in Nigeria</span></div>
+        </div>
+        <div class="hero-art">
+          <img src="WhatsApp%20Image%202026-10-15%20at%2012.50.53%20PM%20(1).jpeg" alt="Tempted Gadgets campaign artwork, featuring a happy customer and the brand's Lagos contact information">
+          <div class="art-tag">Lagos, Nigeria<strong>Shop with confidence</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="service-strip" aria-label="Store benefits">
+      <div class="service-grid wrap">
+        <div class="service-item"><span class="service-icon" aria-hidden="true">✓</span><span><strong>Genuine gadgets</strong><small>Quality you can count on</small></span></div>
+        <div class="service-item"><span class="service-icon" aria-hidden="true">↗</span><span><strong>Fast Lagos delivery</strong><small>Right to your doorstep</small></span></div>
+        <div class="service-item"><span class="service-icon" aria-hidden="true">₦</span><span><strong>Fair prices</strong><small>Great tech, better value</small></span></div>
+        <div class="service-item"><span class="service-icon" aria-hidden="true">♡</span><span><strong>Real human support</strong><small>We're here to help</small></span></div>
+      </div>
+    </section>
+
+    <section class="shop-section wrap" id="shop">
+      <div class="section-head">
+        <div><div class="section-kicker">The good stuff</div><h2>Find your next favourite.</h2></div>
+        <p class="section-note" id="result-count">A little something for every kind of tech lover.</p>
+      </div>
+      <div class="category-row" id="category-row" aria-label="Filter products by category"></div>
+      <div class="product-grid" id="product-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="feature">
+      <div class="feature-inner wrap">
+        <div><div class="section-kicker">The Tempted difference</div><h2>Tech shopping should feel this good.</h2><p>Good advice, genuine products, and a team that cares what you take home. Find us in the heart of Computer Village, or shop from wherever you are.</p></div>
+        <a class="primary-button" href="https://wa.me/2348083738162" target="_blank" rel="noopener noreferrer">Talk to our team <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="about-grid wrap">
+        <div><div class="section-kicker">Come say hello</div><h2>Right here in Ikeja.</h2><div class="about-copy"><p>We love a good gadget almost as much as we love helping you find the right one. Drop by our shop or send us a message. We'll help you figure it out.</p></div></div>
+        <div class="contact-list">
+          <div class="contact-row"><span aria-hidden="true">⌖</span><span><strong>Find our store</strong>12A, Otigba Street, Computer Village, Ikeja, Lagos State</span></div>
+          <div class="contact-row"><span aria-hidden="true">☎</span><span><strong>Call or WhatsApp</strong><a href="tel:+2348083738162">+234 808 373 8162</a></span></div>
+          <div class="contact-row"><span aria-hidden="true">◷</span><span><strong>Come by</strong>Computer Village, Ikeja, Lagos</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-main wrap">
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">T</span><span class="brand-name">Tempted<span>GADGETS</span></span></a>
+      <p>Good tech. Great feeling. Made for you in Lagos.</p>
+      <div class="footer-links"><a href="#shop">Shop</a><a href="#about">Contact</a><a href="https://wa.me/2348083738162" target="_blank" rel="noopener noreferrer">WhatsApp</a></div>
+    </div>
+    <div class="footer-bottom"><div class="wrap"><span>© 2026 Tempted Gadgets</span><span>12A Otigba Street, Ikeja, Lagos</span></div></div>
+  </footer>
+
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping bag" aria-modal="true" role="dialog" aria-hidden="true">
+    <div class="drawer-head"><h2>Your bag <span id="drawer-count"></span></h2><button class="close-button" id="close-cart" type="button" aria-label="Close shopping bag">×</button></div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="drawer-bottom"><div class="shipping-note" id="shipping-note"></div><div class="subtotal"><span>Subtotal</span><span id="subtotal">₦0</span></div><button class="checkout-button" id="checkout" type="button" disabled>Continue on WhatsApp</button><p class="checkout-hint">We'll confirm availability and delivery with you.</p></div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const products = [
+      { id: 1, name: "iPhone 15 Pro", category: "Phones", price: 1850000, oldPrice: 2050000, badge: "Fan favourite", rating: "4.9", image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=760&q=85", alt: "Titanium smartphone with triple camera" },
+      { id: 2, name: "Samsung Galaxy S24", category: "Phones", price: 1420000, oldPrice: null, badge: "Just landed", rating: "4.8", image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=760&q=85", alt: "Samsung Galaxy smartphone" },
+      { id: 3, name: "AirPods Pro (2nd Gen)", category: "Audio", price: 385000, oldPrice: 420000, badge: "Best seller", rating: "4.9", image: "https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?auto=format&fit=crop&w=760&q=85", alt: "White wireless earbuds and charging case" },
+      { id: 4, name: "Sony WH-1000XM5", category: "Audio", price: 690000, oldPrice: null, badge: "Staff pick", rating: "4.8", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=760&q=85", alt: "Premium over-ear wireless headphones" },
+      { id: 5, name: "MacBook Air 13-inch", category: "Laptops", price: 2250000, oldPrice: null, badge: "Worth the hype", rating: "4.9", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=760&q=85", alt: "Slim laptop open on a desk" },
+      { id: 6, name: "Apple Watch Series 9", category: "Wearables", price: 720000, oldPrice: 780000, badge: "Good choice", rating: "4.7", image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?auto=format&fit=crop&w=760&q=85", alt: "Smartwatch with dark sport band" },
+      { id: 7, name: "JBL Charge 5", category: "Audio", price: 245000, oldPrice: null, badge: "Big sound", rating: "4.8", image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=760&q=85", alt: "Portable wireless Bluetooth speaker" },
+      { id: 8, name: "Anker PowerCore 20K", category: "Accessories", price: 68000, oldPrice: null, badge: "Everyday essential", rating: "4.7", image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=760&q=85", alt: "Portable battery power bank" }
+    ];
+    const categories = ["All gadgets", "Phones", "Audio", "Laptops", "Wearables", "Accessories"];
+    const cart = new Map();
+    const favorites = new Set();
+    let activeCategory = "All gadgets";
+    let searchTerm = "";
+    let toastTimer;
+
+    const formatNaira = (amount) => `₦${amount.toLocaleString("en-NG")}`;
+    const productGrid = document.getElementById("product-grid");
+    const categoryRow = document.getElementById("category-row");
+    const cartDrawer = document.getElementById("cart-drawer");
+    const backdrop = document.getElementById("drawer-backdrop");
+
+    function renderCategories() {
+      categoryRow.innerHTML = categories.map((category) => `<button class="category-button${category === activeCategory ? " active" : ""}" type="button" data-category="${category}" aria-pressed="${category === activeCategory}">${category}</button>`).join("");
+    }
+
+    function renderProducts() {
+      const shown = products.filter((product) => {
+        const matchesCategory = activeCategory === "All gadgets" || product.category === activeCategory;
+        const matchesSearch = `${product.name} ${product.category}`.toLowerCase().includes(searchTerm);
+        return matchesCategory && matchesSearch;
+      });
+      document.getElementById("result-count").textContent = searchTerm ? `${shown.length} ${shown.length === 1 ? "match" : "matches"} for “${searchTerm}”` : `${shown.length} lovely finds, picked for you.`;
+      if (!shown.length) {
+        productGrid.innerHTML = '<div class="empty-state">No gadgets found. Try a different search or category.</div>';
+        return;
+      }
+      productGrid.innerHTML = shown.map((product, index) => `
+        <article class="product-card" style="animation-delay:${Math.min(index * 45, 225)}ms">
+          <div class="product-visual"><img src="${product.image}" alt="${product.alt}" loading="lazy"><span class="product-badge">${product.badge}</span><button class="favorite${favorites.has(product.id) ? " selected" : ""}" type="button" data-favorite="${product.id}" aria-label="${favorites.has(product.id) ? "Remove" : "Add"} ${product.name} ${favorites.has(product.id) ? "from" : "to"} favourites" aria-pressed="${favorites.has(product.id)}">${favorites.has(product.id) ? "♥" : "♡"}</button></div>
+          <div class="product-info"><div class="product-category">${product.category}</div><div class="product-title-row"><h3 class="product-title">${product.name}</h3><span class="rating">★ ${product.rating}</span></div><div class="product-bottom"><div><span class="price">${formatNaira(product.price)}</span>${product.oldPrice ? `<span class="old-price">${formatNaira(product.oldPrice)}</span>` : ""}</div><button class="add-button" type="button" data-add="${product.id}">Add to bag +</button></div></div>
+        </article>`).join("");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function updateCart() {
+      const itemCount = [...cart.values()].reduce((sum, item) => sum + item.quantity, 0);
+      const total = [...cart.values()].reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+      document.getElementById("bag-count").textContent = itemCount;
+      document.getElementById("drawer-count").textContent = itemCount ? `(${itemCount})` : "";
+      document.getElementById("subtotal").textContent = formatNaira(total);
+      document.getElementById("checkout").disabled = itemCount === 0;
+      const remaining = Math.max(0, 150000 - total);
+      document.getElementById("shipping-note").textContent = total >= 150000 ? "Your Lagos delivery is on us." : `Add ${formatNaira(remaining)} more for free Lagos delivery.`;
+      const cartItems = document.getElementById("cart-items");
+      if (!itemCount) {
+        cartItems.innerHTML = '<div class="cart-empty"><strong>Your bag is taking a breather.</strong><span>Go on, find something tempting.</span></div>';
+        return;
+      }
+      cartItems.innerHTML = [...cart.values()].map(({ product, quantity }) => `
+        <div class="cart-line"><img src="${product.image}" alt=""><div><h3>${product.name}</h3><small>${formatNaira(product.price)} each</small><div class="qty-controls"><button type="button" data-quantity="${product.id}" data-change="-1" aria-label="Remove one ${product.name}">−</button><span>${quantity}</span><button type="button" data-quantity="${product.id}" data-change="1" aria-label="Add one ${product.name}">+</button></div></div><span class="line-price">${formatNaira(product.price * quantity)}</span></div>`).join("");
+    }
+
+    function setCartOpen(open) {
+      cartDrawer.classList.toggle("open", open);
+      backdrop.classList.toggle("open", open);
+      cartDrawer.setAttribute("aria-hidden", String(!open));
+      document.body.classList.toggle("locked", open);
+      if (open) document.getElementById("close-cart").focus();
+    }
+
+    function updateSearch(value) {
+      searchTerm = value.trim().toLowerCase();
+      renderProducts();
+    }
+
+    categoryRow.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-category]");
+      if (!button) return;
+      activeCategory = button.dataset.category;
+      renderCategories();
+      renderProducts();
+    });
+    productGrid.addEventListener("click", (event) => {
+      const addButton = event.target.closest("[data-add]");
+      const favoriteButton = event.target.closest("[data-favorite]");
+      if (addButton) {
+        const product = products.find((item) => item.id === Number(addButton.dataset.add));
+        const line = cart.get(product.id) || { product, quantity: 0 };
+        line.quantity += 1;
+        cart.set(product.id, line);
+        updateCart();
+        showToast(`${product.name} added to your bag`);
+      }
+      if (favoriteButton) {
+        const productId = Number(favoriteButton.dataset.favorite);
+        favorites.has(productId) ? favorites.delete(productId) : favorites.add(productId);
+        renderProducts();
+      }
+    });
+    document.getElementById("cart-items").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-quantity]");
+      if (!button) return;
+      const productId = Number(button.dataset.quantity);
+      const line = cart.get(productId);
+      line.quantity += Number(button.dataset.change);
+      if (line.quantity <= 0) cart.delete(productId);
+      updateCart();
+    });
+    document.getElementById("open-cart").addEventListener("click", () => setCartOpen(true));
+    document.getElementById("close-cart").addEventListener("click", () => setCartOpen(false));
+    backdrop.addEventListener("click", () => setCartOpen(false));
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") setCartOpen(false); });
+    document.querySelectorAll("[data-nav-category]").forEach((link) => link.addEventListener("click", () => {
+      activeCategory = link.dataset.navCategory;
+      renderCategories();
+      renderProducts();
+    }));
+    document.getElementById("search-input").addEventListener("input", (event) => updateSearch(event.target.value));
+    document.getElementById("mobile-search-input").addEventListener("input", (event) => {
+      updateSearch(event.target.value);
+      document.getElementById("search-input").value = event.target.value;
+    });
+    document.querySelector(".search-box").addEventListener("click", () => {
+      if (window.matchMedia("(max-width: 760px)").matches) {
+        const mobileSearch = document.getElementById("mobile-search");
+        mobileSearch.classList.toggle("open");
+        if (mobileSearch.classList.contains("open")) document.getElementById("mobile-search-input").focus();
+      }
+    });
+    document.getElementById("checkout").addEventListener("click", () => {
+      const lines = [...cart.values()].map(({ product, quantity }) => `${quantity} x ${product.name} — ${formatNaira(product.price * quantity)}`);
+      const total = [...cart.values()].reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+      const message = `Hi Tempted Gadgets! I'd like to order:\n\n${lines.join("\n")}\n\nSubtotal: ${formatNaira(total)}\nPlease confirm availability and delivery. `;
+      window.open(`https://wa.me/2348083738162?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    });
+
+    renderCategories();
+    renderProducts();
+    updateCart();
+  </script>
+</body>
+</html>
