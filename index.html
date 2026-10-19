@@ -379,6 +379,44 @@
       return label === "Condition unconfirmed" ? "UNCONFIRMED" : label.toUpperCase();
     }
 
+    function normalizeSearchText(value) {
+      return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    }
+
+    function isOneEditAway(left, right) {
+      if (Math.abs(left.length - right.length) > 1) return false;
+      let leftIndex = 0;
+      let rightIndex = 0;
+      let edits = 0;
+      while (leftIndex < left.length && rightIndex < right.length) {
+        if (left[leftIndex] === right[rightIndex]) {
+          leftIndex += 1;
+          rightIndex += 1;
+          continue;
+        }
+        edits += 1;
+        if (edits > 1) return false;
+        if (left.length > right.length) leftIndex += 1;
+        else if (right.length > left.length) rightIndex += 1;
+        else {
+          leftIndex += 1;
+          rightIndex += 1;
+        }
+      }
+      return edits + Number(leftIndex < left.length || rightIndex < right.length) <= 1;
+    }
+
+    function matchesSearch(product, query) {
+      if (!query) return true;
+      const searchableText = normalizeSearchText(`${product.name} ${product.type} ${product.condition || ""} ${product.usedClassification || ""} ${conditionLabel(product)}`);
+      const queryWords = query.split(" ");
+      if (searchableText.replaceAll(" ", "").includes(queryWords.join(""))) return true;
+      const searchableWords = searchableText.split(" ");
+      return queryWords.every((queryWord) => searchableWords.some((word) =>
+        word.includes(queryWord) || (queryWord.length >= 5 && isOneEditAway(queryWord, word))
+      ));
+    }
+
     function renderCategories() {
       conditionFilters.innerHTML = conditions.map((condition) => {
         const label = condition === "All" ? "Shop All" : condition;
@@ -403,8 +441,7 @@
         const matchesCondition = activeCondition === "All" || conditionLabel(product) === activeCondition || (activeCondition === "Used" && ["UK Used", "Nigerian Used"].includes(conditionLabel(product)));
         const matchesUsedClassification = activeCondition !== "Used" || activeUsedClassification === "All used" || product.usedClassification === activeUsedClassification;
         const matchesType = activeProductType === "All types" || product.type === activeProductType;
-        const searchableText = `${product.name} ${product.type} ${product.condition || ""} ${product.usedClassification || ""} ${conditionLabel(product)}`.toLowerCase();
-        return matchesCondition && matchesUsedClassification && matchesType && searchableText.includes(searchTerm);
+        return matchesCondition && matchesUsedClassification && matchesType && matchesSearch(product, searchTerm);
       });
       const filterDescription = [activeCondition !== "All" ? activeCondition : "", activeCondition === "Used" && activeUsedClassification !== "All used" ? activeUsedClassification : "", activeProductType !== "All types" ? activeProductType : ""].filter(Boolean).join(" · ");
       const countDescription = `${shown.length} ${shown.length === 1 ? "product" : "products"}${filterDescription ? ` · ${filterDescription}` : ""}`;
@@ -455,7 +492,7 @@
     }
 
     function updateSearch(value) {
-      searchTerm = value.trim().toLowerCase();
+      searchTerm = normalizeSearchText(value);
       renderProducts();
     }
 
