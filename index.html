@@ -288,12 +288,12 @@
         <a href="#shop" data-nav-condition="All">Shop all</a><a href="#shop" data-nav-condition="New">New</a><a href="#shop" data-nav-condition="Used">Used</a><a href="#about">Our store</a>
       </nav>
       <div class="nav-actions">
-        <label class="search-box" aria-label="Search products"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search gadgets..." aria-controls="search-results" aria-expanded="false"></label>
+        <label class="search-box" aria-label="Search products"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search gadgets..." role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="search-results" aria-expanded="false"></label>
         <div class="search-results" id="search-results" role="listbox" aria-label="Search suggestions" hidden></div>
         <button class="bag-button" id="open-cart" type="button" aria-label="Open shopping bag">Bag <span class="bag-count" id="bag-count">0</span></button>
       </div>
       <div class="mobile-search" id="mobile-search">
-        <label class="mobile-search-box" aria-label="Search products"><input id="mobile-search-input" type="search" placeholder="Search gadgets..." aria-controls="mobile-search-results" aria-expanded="false"></label>
+        <label class="mobile-search-box" aria-label="Search products"><input id="mobile-search-input" type="search" placeholder="Search gadgets..." role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="mobile-search-results" aria-expanded="false"></label>
         <div class="search-results" id="mobile-search-results" role="listbox" aria-label="Search suggestions" hidden></div>
       </div>
     </div>
@@ -401,7 +401,8 @@
     const conditions = ["All", "New", "Used"];
     const usedClassifications = ["All used", "UK Used", "Nigerian Used"];
     const productTypes = ["All types", "Phones", "Audio", "Laptops", "Wearables", "Accessories"];
-    const cart = new Map();
+    const cartStorageKey = "tempted-gadgets-cart-v1";
+    const cart = loadCart();
     const favorites = new Set();
     let activeCondition = "All";
     let activeUsedClassification = "All used";
@@ -417,6 +418,30 @@
     const usedFilterRow = document.getElementById("used-filter-row");
     const cartDrawer = document.getElementById("cart-drawer");
     const backdrop = document.getElementById("drawer-backdrop");
+
+    function loadCart() {
+      try {
+        const savedItems = JSON.parse(localStorage.getItem(cartStorageKey) || "[]");
+        if (!Array.isArray(savedItems)) return new Map();
+        return new Map(savedItems.flatMap(({ productId, quantity }) => {
+          const product = products.find((item) => item.id === productId);
+          return product && Number.isInteger(quantity) && quantity > 0
+            ? [[product.id, { product, quantity }]]
+            : [];
+        }));
+      } catch {
+        return new Map();
+      }
+    }
+
+    function saveCart() {
+      try {
+        const savedItems = [...cart.values()].map(({ product, quantity }) => ({ productId: product.id, quantity }));
+        localStorage.setItem(cartStorageKey, JSON.stringify(savedItems));
+      } catch {
+        showToast("Your bag could not be saved on this device");
+      }
+    }
 
     function conditionLabel(product) {
       if (product.condition === "New" && !product.usedClassification) return "New";
@@ -563,6 +588,7 @@
       const line = cart.get(product.id) || { product, quantity: 0 };
       line.quantity += 1;
       cart.set(product.id, line);
+      saveCart();
       updateCart();
       showToast(`${product.name} added to your bag`);
     }
@@ -604,6 +630,46 @@
     function updateSearch(value) {
       searchTerm = normalizeSearchText(value);
       renderProducts();
+    }
+
+    function closeSearchSuggestions(input) {
+      const results = document.getElementById(input.getAttribute("aria-controls"));
+      results.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+      input.focus();
+    }
+
+    function handleSearchInputKeydown(event) {
+      const input = event.currentTarget;
+      const results = document.getElementById(input.getAttribute("aria-controls"));
+      if (event.key === "Escape" && !results.hidden) {
+        event.preventDefault();
+        closeSearchSuggestions(input);
+      } else if (event.key === "ArrowDown" && !results.hidden) {
+        const firstSuggestion = results.querySelector("[data-search-suggestion]");
+        if (firstSuggestion) {
+          event.preventDefault();
+          firstSuggestion.focus();
+        }
+      }
+    }
+
+    function handleSearchSuggestionKeydown(event) {
+      const list = event.currentTarget;
+      const suggestions = [...list.querySelectorAll("[data-search-suggestion]")];
+      const activeIndex = suggestions.indexOf(document.activeElement);
+      const input = document.querySelector(`[aria-controls="${list.id}"]`);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeSearchSuggestions(input);
+      } else if (event.key === "ArrowDown" && activeIndex < suggestions.length - 1) {
+        event.preventDefault();
+        suggestions[activeIndex + 1].focus();
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (activeIndex > 0) suggestions[activeIndex - 1].focus();
+        else input.focus();
+      }
     }
 
     document.getElementById("category-row").addEventListener("click", (event) => {
@@ -649,6 +715,7 @@
       const line = cart.get(productId);
       line.quantity += Number(button.dataset.change);
       if (line.quantity <= 0) cart.delete(productId);
+      saveCart();
       updateCart();
     });
     document.getElementById("open-cart").addEventListener("click", () => setCartOpen(true));
@@ -668,7 +735,12 @@
       renderCategories();
       renderProducts();
     }));
-    document.querySelectorAll(".search-results").forEach((list) => list.addEventListener("click", selectSearchSuggestion));
+    document.querySelectorAll(".search-results").forEach((list) => {
+      list.addEventListener("click", selectSearchSuggestion);
+      list.addEventListener("keydown", handleSearchSuggestionKeydown);
+    });
+    document.getElementById("search-input").addEventListener("keydown", handleSearchInputKeydown);
+    document.getElementById("mobile-search-input").addEventListener("keydown", handleSearchInputKeydown);
     document.getElementById("search-input").addEventListener("input", (event) => {
       document.getElementById("mobile-search-input").value = event.target.value;
       updateSearch(event.target.value);
