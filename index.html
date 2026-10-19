@@ -46,11 +46,21 @@
     .nav-links { display: flex; align-items: center; gap: 22px; margin-left: auto; font-size: 15px; font-weight: 600; }
     .nav-links a { transition: color .2s; }
     .nav-links a:hover, .nav-links a.active { color: var(--red-dark); }
-    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .nav-actions { position: relative; display: flex; align-items: center; gap: 12px; }
     .search-box { display: flex; align-items: center; gap: 8px; width: 194px; height: 40px; padding: 0 12px; border: 1px solid var(--line); background: #fff; }
     .search-box span { color: var(--muted); font-size: 17px; }
     .search-box input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 14px; }
     .search-box input::placeholder { color: #918b86; }
+    .search-results { position: absolute; z-index: 25; top: calc(100% + 8px); left: 0; width: min(320px, calc(100vw - 36px)); max-height: 360px; overflow: auto; border: 1px solid var(--line); background: var(--white); box-shadow: 0 12px 30px #17151520; }
+    .search-results[hidden] { display: none; }
+    .search-suggestion { width: 100%; display: grid; grid-template-columns: 48px 1fr; align-items: center; gap: 12px; padding: 10px; border: 0; border-bottom: 1px solid var(--line); background: transparent; cursor: pointer; text-align: left; }
+    .search-suggestion:last-child { border-bottom: 0; }
+    .search-suggestion:hover, .search-suggestion:focus-visible { background: var(--paper); }
+    .search-suggestion img { width: 48px; height: 48px; object-fit: cover; background: var(--paper); }
+    .search-suggestion strong, .search-suggestion small { display: block; }
+    .search-suggestion strong { font: 600 14px/1.35 var(--display); }
+    .search-suggestion small { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .search-empty { margin: 0; padding: 16px; color: var(--muted); font-size: 13px; }
     .bag-button { position: relative; min-height: 42px; padding: 0 14px; border: 1px solid var(--ink); background: var(--ink); color: white; cursor: pointer; font-size: 14px; font-weight: 700; }
     .bag-count { display: inline-grid; min-width: 21px; height: 21px; place-items: center; margin-left: 6px; border-radius: 50%; background: var(--red); font-size: 12px; }
 
@@ -198,6 +208,7 @@
       .search-box { width: 39px; height: 39px; justify-content: center; padding: 0; border-color: transparent; background: transparent; }
       .search-box span { font-size: 19px; }
       .search-box input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .nav-actions > .search-results { display: none; }
       .bag-button { min-height: 40px; padding: 0 10px; font-size: 13px; }
       .hero-grid { grid-template-columns: 1fr; gap: 6px; padding-top: 42px; padding-bottom: 32px; }
       .hero-copy { padding: 0; }
@@ -237,6 +248,9 @@
       .footer-bottom .wrap { flex-direction: column; gap: 6px; }
       .mobile-search { position: absolute; top: 65px; left: 0; right: 0; display: none; padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--white); }
       .mobile-search.open { display: block; }
+      .mobile-search-box { display: block; }
+      .mobile-search-box input { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--line); background: white; color: var(--ink); }
+      .mobile-search .search-results { position: static; width: 100%; max-height: 280px; margin-top: 7px; box-shadow: none; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -255,10 +269,14 @@
         <a href="#shop" data-nav-condition="All">Shop all</a><a href="#shop" data-nav-condition="New">New</a><a href="#shop" data-nav-condition="Used">Used</a><a href="#about">Our store</a>
       </nav>
       <div class="nav-actions">
-        <label class="search-box" aria-label="Search products"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search gadgets..."></label>
+        <label class="search-box" aria-label="Search products"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search gadgets..." aria-controls="search-results" aria-expanded="false"></label>
+        <div class="search-results" id="search-results" role="listbox" aria-label="Search suggestions" hidden></div>
         <button class="bag-button" id="open-cart" type="button" aria-label="Open shopping bag">Bag <span class="bag-count" id="bag-count">0</span></button>
       </div>
-      <label class="mobile-search" id="mobile-search"><input id="mobile-search-input" type="search" placeholder="Search gadgets..."></label>
+      <div class="mobile-search" id="mobile-search">
+        <label class="mobile-search-box" aria-label="Search products"><input id="mobile-search-input" type="search" placeholder="Search gadgets..." aria-controls="mobile-search-results" aria-expanded="false"></label>
+        <div class="search-results" id="mobile-search-results" role="listbox" aria-label="Search suggestions" hidden></div>
+      </div>
     </div>
   </header>
 
@@ -436,13 +454,18 @@
       });
     }
 
-    function renderProducts() {
-      const shown = products.filter((product) => {
+    function getFilteredProducts() {
+      return products.filter((product) => {
         const matchesCondition = activeCondition === "All" || conditionLabel(product) === activeCondition || (activeCondition === "Used" && ["UK Used", "Nigerian Used"].includes(conditionLabel(product)));
         const matchesUsedClassification = activeCondition !== "Used" || activeUsedClassification === "All used" || product.usedClassification === activeUsedClassification;
         const matchesType = activeProductType === "All types" || product.type === activeProductType;
         return matchesCondition && matchesUsedClassification && matchesType && matchesSearch(product, searchTerm);
       });
+    }
+
+    function renderProducts() {
+      const shown = getFilteredProducts();
+      renderSearchSuggestions(shown);
       const filterDescription = [activeCondition !== "All" ? activeCondition : "", activeCondition === "Used" && activeUsedClassification !== "All used" ? activeUsedClassification : "", activeProductType !== "All types" ? activeProductType : ""].filter(Boolean).join(" · ");
       const countDescription = `${shown.length} ${shown.length === 1 ? "product" : "products"}${filterDescription ? ` · ${filterDescription}` : ""}`;
       document.getElementById("result-count").textContent = searchTerm ? `${countDescription} matching “${searchTerm}”` : `${countDescription} available to browse`;
@@ -455,6 +478,33 @@
           <div class="product-visual"><img src="${product.image}" alt="${product.alt}" loading="lazy"><span class="condition-badge" title="${conditionLabel(product)}">${conditionBadgeLabel(product)}</span><span class="product-badge">${product.badge}</span><button class="favorite${favorites.has(product.id) ? " selected" : ""}" type="button" data-favorite="${product.id}" aria-label="${favorites.has(product.id) ? "Remove" : "Add"} ${product.name} ${favorites.has(product.id) ? "from" : "to"} favourites" aria-pressed="${favorites.has(product.id)}">${favorites.has(product.id) ? "♥" : "♡"}</button></div>
           <div class="product-info"><div class="product-category">${product.type}</div><div class="product-title-row"><h3 class="product-title">${product.name}</h3>${product.rating ? `<span class="rating">★ ${product.rating}</span>` : ""}</div><div class="product-bottom"><div><span class="price">${formatNaira(product.price)}</span>${product.oldPrice ? `<span class="old-price">${formatNaira(product.oldPrice)}</span>` : ""}</div><button class="add-button" type="button" data-add="${product.id}">Add to bag +</button></div></div>
         </article>`).join("");
+    }
+
+    function renderSearchSuggestions(shown) {
+      const isOpen = Boolean(searchTerm);
+      const inputs = [document.getElementById("search-input"), document.getElementById("mobile-search-input")];
+      inputs.forEach((input) => input.setAttribute("aria-expanded", String(isOpen)));
+      document.querySelectorAll(".search-results").forEach((list) => {
+        list.hidden = !isOpen;
+        if (!isOpen) return;
+        list.innerHTML = shown.length ? shown.slice(0, 5).map((product) => `
+          <button class="search-suggestion" type="button" role="option" data-search-suggestion="${product.id}" aria-selected="false">
+            <img src="${product.image}" alt="">
+            <span><strong>${product.name}</strong><small>${conditionLabel(product)} · ${formatNaira(product.price)}</small></span>
+          </button>`).join("") : '<p class="search-empty">No matching gadgets found.</p>';
+      });
+    }
+
+    function selectSearchSuggestion(event) {
+      const suggestion = event.target.closest("[data-search-suggestion]");
+      if (!suggestion) return;
+      const product = products.find((item) => item.id === Number(suggestion.dataset.searchSuggestion));
+      if (!product) return;
+      document.getElementById("search-input").value = product.name;
+      document.getElementById("mobile-search-input").value = product.name;
+      updateSearch(product.name);
+      document.getElementById("mobile-search").classList.remove("open");
+      document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
     }
 
     function showToast(message) {
@@ -550,7 +600,11 @@
       renderCategories();
       renderProducts();
     }));
-    document.getElementById("search-input").addEventListener("input", (event) => updateSearch(event.target.value));
+    document.querySelectorAll(".search-results").forEach((list) => list.addEventListener("click", selectSearchSuggestion));
+    document.getElementById("search-input").addEventListener("input", (event) => {
+      document.getElementById("mobile-search-input").value = event.target.value;
+      updateSearch(event.target.value);
+    });
     document.getElementById("mobile-search-input").addEventListener("input", (event) => {
       updateSearch(event.target.value);
       document.getElementById("search-input").value = event.target.value;
