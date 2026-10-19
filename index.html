@@ -118,6 +118,21 @@
     .favorite { position: absolute; top: 9px; right: 9px; width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #fffdfaeb; cursor: pointer; font-size: 18px; transition: color .2s, transform .2s; }
     .favorite:hover { transform: scale(1.08); }
     .favorite.selected { color: var(--red); }
+    .quick-view-button { position: absolute; right: 10px; bottom: 10px; min-height: 36px; padding: 0 12px; border: 1px solid var(--line); background: var(--white); cursor: pointer; font-size: 12px; font-weight: 700; }
+    .quick-view-button:hover { background: var(--ink); color: white; }
+    .quick-view-dialog { width: min(820px, calc(100% - 32px)); max-height: min(720px, calc(100dvh - 32px)); padding: 0; overflow: auto; border: 0; background: var(--white); color: var(--ink); box-shadow: 0 24px 80px #17151540; }
+    .quick-view-dialog::backdrop { background: #171515a8; backdrop-filter: blur(3px); }
+    .quick-view-content { position: relative; display: grid; grid-template-columns: 1fr 1fr; min-height: 420px; }
+    .quick-view-image { min-height: 420px; background: var(--paper); }
+    .quick-view-image img { width: 100%; height: 100%; object-fit: cover; }
+    .quick-view-info { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 44px 38px; }
+    .quick-view-close { position: absolute; z-index: 1; top: 14px; right: 14px; width: 38px; height: 38px; border: 1px solid var(--line); background: var(--white); cursor: pointer; font-size: 22px; }
+    .quick-view-type { margin-bottom: 10px; color: var(--red-dark); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .quick-view-info h2 { margin: 0 0 14px; font-size: 30px; }
+    .quick-view-meta { margin-bottom: 20px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .quick-view-price { margin: 0 0 22px; font: 700 24px/1.2 var(--display); }
+    .quick-view-old-price { display: block; margin-top: 5px; color: var(--muted); font: 500 14px/1.2 var(--body); text-decoration: line-through; }
+    .quick-view-info .primary-button { width: 100%; }
     .product-info { padding-top: 13px; }
     .product-category { margin-bottom: 7px; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
     .product-title-row { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
@@ -240,6 +255,10 @@
       .rating { font-size: 12px; }
       .product-bottom { align-items: flex-start; flex-direction: column; gap: 9px; }
       .add-button { width: 100%; font-size: 13px; }
+      .quick-view-content { grid-template-columns: 1fr; }
+      .quick-view-image { min-height: 0; aspect-ratio: 1.1; }
+      .quick-view-info { padding: 26px 22px; }
+      .quick-view-info h2 { font-size: 25px; }
       .feature-inner { min-height: 0; grid-template-columns: 1fr; gap: 26px; padding-top: 46px; padding-bottom: 46px; }
       .feature-mark { display: none; }
       .about { padding: 58px 0; }
@@ -353,6 +372,19 @@
     <div class="cart-items" id="cart-items"></div>
     <div class="drawer-bottom"><div class="shipping-note" id="shipping-note"></div><div class="subtotal"><span>Subtotal</span><span id="subtotal">₦0</span></div><button class="checkout-button" id="checkout" type="button" disabled>Continue on WhatsApp</button><p class="checkout-hint">We'll confirm availability and delivery with you.</p></div>
   </aside>
+  <dialog class="quick-view-dialog" id="quick-view-dialog" aria-labelledby="quick-view-name">
+    <div class="quick-view-content">
+      <button class="quick-view-close" id="close-quick-view" type="button" aria-label="Close product details">×</button>
+      <div class="quick-view-image"><img id="quick-view-image" alt=""></div>
+      <div class="quick-view-info">
+        <div class="quick-view-type" id="quick-view-type"></div>
+        <h2 id="quick-view-name"></h2>
+        <div class="quick-view-meta" id="quick-view-meta"></div>
+        <p class="quick-view-price" id="quick-view-price"></p>
+        <button class="primary-button" id="quick-view-add" type="button">Add to bag <span aria-hidden="true">+</span></button>
+      </div>
+    </div>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -475,7 +507,7 @@
       }
       productGrid.innerHTML = shown.map((product, index) => `
         <article class="product-card" style="animation-delay:${Math.min(index * 45, 225)}ms">
-          <div class="product-visual"><img src="${product.image}" alt="${product.alt}" loading="lazy"><span class="condition-badge" title="${conditionLabel(product)}">${conditionBadgeLabel(product)}</span><span class="product-badge">${product.badge}</span><button class="favorite${favorites.has(product.id) ? " selected" : ""}" type="button" data-favorite="${product.id}" aria-label="${favorites.has(product.id) ? "Remove" : "Add"} ${product.name} ${favorites.has(product.id) ? "from" : "to"} favourites" aria-pressed="${favorites.has(product.id)}">${favorites.has(product.id) ? "♥" : "♡"}</button></div>
+          <div class="product-visual"><img src="${product.image}" alt="${product.alt}" loading="lazy"><span class="condition-badge" title="${conditionLabel(product)}">${conditionBadgeLabel(product)}</span><span class="product-badge">${product.badge}</span><button class="favorite${favorites.has(product.id) ? " selected" : ""}" type="button" data-favorite="${product.id}" aria-label="${favorites.has(product.id) ? "Remove" : "Add"} ${product.name} ${favorites.has(product.id) ? "from" : "to"} favourites" aria-pressed="${favorites.has(product.id)}">${favorites.has(product.id) ? "♥" : "♡"}</button><button class="quick-view-button" type="button" data-view="${product.id}" aria-label="Quick view ${product.name}">Quick view</button></div>
           <div class="product-info"><div class="product-category">${product.type}</div><div class="product-title-row"><h3 class="product-title">${product.name}</h3>${product.rating ? `<span class="rating">★ ${product.rating}</span>` : ""}</div><div class="product-bottom"><div><span class="price">${formatNaira(product.price)}</span>${product.oldPrice ? `<span class="old-price">${formatNaira(product.oldPrice)}</span>` : ""}</div><button class="add-button" type="button" data-add="${product.id}">Add to bag +</button></div></div>
         </article>`).join("");
     }
@@ -505,6 +537,34 @@
       updateSearch(product.name);
       document.getElementById("mobile-search").classList.remove("open");
       document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function openQuickView(productId) {
+      const product = products.find((item) => item.id === productId);
+      if (!product) return;
+      document.getElementById("quick-view-image").src = product.image;
+      document.getElementById("quick-view-image").alt = product.alt;
+      document.getElementById("quick-view-type").textContent = product.type;
+      document.getElementById("quick-view-name").textContent = product.name;
+      document.getElementById("quick-view-meta").textContent = `${conditionLabel(product)}${product.rating ? ` · ★ ${product.rating}` : ""} · ${product.badge}`;
+      const price = document.getElementById("quick-view-price");
+      price.replaceChildren(document.createTextNode(formatNaira(product.price)));
+      if (product.oldPrice) {
+        const oldPrice = document.createElement("span");
+        oldPrice.className = "quick-view-old-price";
+        oldPrice.textContent = formatNaira(product.oldPrice);
+        price.append(oldPrice);
+      }
+      document.getElementById("quick-view-add").dataset.add = product.id;
+      document.getElementById("quick-view-dialog").showModal();
+    }
+
+    function addProductToCart(product) {
+      const line = cart.get(product.id) || { product, quantity: 0 };
+      line.quantity += 1;
+      cart.set(product.id, line);
+      updateCart();
+      showToast(`${product.name} added to your bag`);
     }
 
     function showToast(message) {
@@ -565,15 +625,16 @@
       renderProducts();
     });
     productGrid.addEventListener("click", (event) => {
+      const viewButton = event.target.closest("[data-view]");
       const addButton = event.target.closest("[data-add]");
       const favoriteButton = event.target.closest("[data-favorite]");
+      if (viewButton) {
+        openQuickView(Number(viewButton.dataset.view));
+        return;
+      }
       if (addButton) {
         const product = products.find((item) => item.id === Number(addButton.dataset.add));
-        const line = cart.get(product.id) || { product, quantity: 0 };
-        line.quantity += 1;
-        cart.set(product.id, line);
-        updateCart();
-        showToast(`${product.name} added to your bag`);
+        if (product) addProductToCart(product);
       }
       if (favoriteButton) {
         const productId = Number(favoriteButton.dataset.favorite);
@@ -592,6 +653,13 @@
     });
     document.getElementById("open-cart").addEventListener("click", () => setCartOpen(true));
     document.getElementById("close-cart").addEventListener("click", () => setCartOpen(false));
+    document.getElementById("close-quick-view").addEventListener("click", () => document.getElementById("quick-view-dialog").close());
+    document.getElementById("quick-view-add").addEventListener("click", (event) => {
+      const product = products.find((item) => item.id === Number(event.currentTarget.dataset.add));
+      if (!product) return;
+      addProductToCart(product);
+      document.getElementById("quick-view-dialog").close();
+    });
     backdrop.addEventListener("click", () => setCartOpen(false));
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") setCartOpen(false); });
     document.querySelectorAll("[data-nav-condition]").forEach((link) => link.addEventListener("click", () => {
